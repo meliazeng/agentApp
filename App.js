@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, FlatList } from 'react-native';
+import { View, TextInput, Button, FlatList, Platform, Alert, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import MessageWindow from './components/MessageWindow';
-import styles from './styles/styles';
+import styles, { modalStyles } from './styles/styles';
 
 const App = () => {
   const [target, setTarget] = useState('');
@@ -12,9 +12,10 @@ const App = () => {
   const pickImage = async () => {
     let result;
     // Check for camera roll permissions on iOS/Android
+    //console.log(Platform.OS); 
     if (Platform.OS !== 'web') {
        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
+       if (status !== 'granted') {
           alert('Sorry, we need camera roll permissions to make this work!');
            return;
         }
@@ -117,6 +118,21 @@ const App = () => {
     }
 
   };
+
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [agentAddress, setAgentAddress] = useState('');
+  const [certificate, setCertificate] = useState('');
+
+  const handleSaveSettings = () => {
+    // Here you would save the agentAddress and certificate values, e.g., to AsyncStorage or to your backend.
+    console.log("Saving settings:", { agentAddress, certificate });
+    setShowSettingsModal(false); // Close the modal after saving
+    Alert.alert("Settings Saved", "Your settings have been successfully saved.");
+
+  };
+
+
+
 /*
   useEffect(() => {
     // Fetch messages initially and then every 60 seconds (1 minute)
@@ -128,6 +144,32 @@ const App = () => {
 */
   return (
     <View style={styles.container}>
+      <View style={styles.imagePickerButtonContainer}>
+        <View style={styles.buttonRow}>
+          <Button title="Pick Image" onPress={pickImage} />
+          <View style={styles.buttonSpacer} />
+          <Button title="Settings" onPress={() => setShowSettingsModal(true)} />
+        </View>      
+      </View>
+      <Modal visible={showSettingsModal} animationType="slide">
+        <View style={modalStyles.modalContainer}> 
+          <TextInput
+            placeholder="Agent Address"
+            value={agentAddress}
+            onChangeText={setAgentAddress}
+            style={modalStyles.input}
+          />
+          <TextInput
+            placeholder="Certificate"
+            value={certificate}
+            onChangeText={setCertificate}
+            style={modalStyles.input}
+
+          />
+          <Button title="Save" onPress={handleSaveSettings} />
+          <Button title="Cancel" onPress={() => setShowSettingsModal(false)} />
+        </View>
+      </Modal>
       <MessageWindow messages={messages} />
       <View style={styles.inputContainer}>
         <TextInput
@@ -143,7 +185,6 @@ const App = () => {
           onChangeText={setMessage}
         />
         <Button title="Send" onPress={sendMessage} />
-        <Button title="Pick Image" onPress={pickImage} />
       </View>
     </View>
   );

@@ -5,6 +5,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  imagePickerButtonContainer: {
+    marginTop: 30,
+  },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -31,5 +34,21 @@ const styles = StyleSheet.create({
 
 });
 
-export default styles;
+
+const modalStyles = StyleSheet.create({
+  modalContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      padding: 20,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: '#ccc',
+      padding: 10,
+      marginBottom: 10,
+    },
+});
+
+
+export {styles as default, modalStyles};
 
